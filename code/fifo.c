@@ -5,7 +5,8 @@
 #include <string.h>
 
 
-#include <../graphique/fifo_Interface.h>
+//#include <../graphique/fifo_Interface.h>
+#include <../graphique/ProcessesInterface.h>
 
 
 #define MAXx 100
@@ -43,13 +44,13 @@ void print_table(Process process[], int n1)
 {
     int i;
     //int n2=n1;
-    puts("+-----+------------+--------------+-----------------+");
-    puts("| PID | Burst Time | Waiting Time | Turnaround Time |");
-    puts("+-----+------------+--------------+-----------------+");
+    puts("+-----+-------------+------------+--------------+-----------------+");
+    puts("| PID | Arrive time | Burst Time | Waiting Time | Turnaround Time |");
+    puts("+-----+-------------+------------+--------------+-----------------+");
 
     for(i=0; i<n1; i++) {
-        printf("| %2d  |     %2d     |      %2d      |        %2d       |\n",i+1,process[i].burst, process[i].waiting_time,process[i].turnaround_time );
-        puts("+-----+------------+--------------+-----------------+");
+        printf("| %2d  |     %2d      |     %2d     |      %2d      |        %2d       |\n",i+1,process[i].arrive_time,process[i].burst, process[i].waiting_time,process[i].turnaround_time );
+        puts("+-----+-------------+------------+--------------+-----------------+");
     }
 
 }
@@ -196,7 +197,8 @@ setup_gui(argc, argv);
     g_object_set_data(G_OBJECT(text_view), "process-count", GINT_TO_POINTER(process_count));
 
     // Directly call the display_process_information function
-    display_process_information(text_view, NULL);
+    //display_process_information(text_view, NULL);
+    display_fifo_interface(text_view, NULL);
 
     // print table
     puts(""); // Empty line

@@ -3,7 +3,9 @@
 #include <string.h>
 
 
-#include <../graphique/RR_Inter.h>
+//#include <../graphique/RR_Inter.h>
+
+#include <../graphique/ProcessesInterface.h>
 
 
 #define MAX_PROCESSES 100 // Define the maximum number of processes
@@ -99,7 +101,7 @@ int main(int argc, char* argv[]) {
     
     
         // Call the function to display Gantt chart in GTK window
-    displayGanttChartGTK(tab2, output, outputIndex);
+    display_roundrobin_interface(tab2, output, outputIndex);
 
     return 0;
 }

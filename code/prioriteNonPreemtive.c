@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <../graphique/PrioritéNon_Inter.h>
+//#include <../graphique/PrioritéNon_Inter.h>
+#include <../graphique/ProcessesInterface.h>
+
+
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
@@ -18,29 +21,29 @@ int main(int argc, char* argv[]) {
     int n;
     fscanf(fp, "%d", &n); // Read the number of processes
 
-    Info tab2[n]; // Assuming the number of processes is provided in the file
+    Process tab2[n]; // Assuming the number of processes is provided in the file
 
     for (int i = 0; i < n; i++) {
-        int ta, te, pr;
+        int arrive_time, burst, priority;
         char id[ID_LEN];
 
-        if (fscanf(fp, "%s %d %d %d", id, &ta, &te, &pr) != 4) {
+        if (fscanf(fp, "%s %d %d %d", id, &arrive_time, &burst, &priority) != 4) {
             printf("Invalid input format.\n");
             return 1;
         }
 
         strcpy(tab2[i].id, id);
-        tab2[i].ta = ta;
-        tab2[i].te = te;
-        tab2[i].pr = pr;
+        tab2[i].arrive_time = arrive_time;
+        tab2[i].burst = burst;
+        tab2[i].priority = priority;
         tab2[i].num = i + 1;
-        tab2[i].waitingTime = 0;
-        tab2[i].reste = te;
+        tab2[i].waiting_time = 0;
+        tab2[i].reste = burst;
     }
 
     fclose(fp);
 
-    int currentTime = tab2[0].ta; // Set the initial time to the arrival time of the first process
+    int currentTime = tab2[0].arrive_time; // Set the initial time to the arrival time of the first process
 
     printf(" **** Priority Process Scheduling ****\n");
     printf("Process\tArrival Time\tExecution Time\tPriority\tCompletion Time\n");
@@ -54,8 +57,8 @@ int main(int argc, char* argv[]) {
 
         // Find the highest priority process that has arrived and not yet completed
         for (int j = 0; j < n; j++) {
-            if (tab2[j].reste > 0 && tab2[j].ta <= currentTime && tab2[j].pr > highestPriority) {
-                highestPriority = tab2[j].pr;
+            if (tab2[j].reste > 0 && tab2[j].arrive_time <= currentTime && tab2[j].priority > highestPriority) {
+                highestPriority = tab2[j].priority;
                 highestPriorityIndex = j;
             }
         }
@@ -65,8 +68,8 @@ int main(int argc, char* argv[]) {
 
             // Find the next process arrival time
             for (int j = 0; j < n; j++) {
-                if (tab2[j].reste > 0 && tab2[j].ta > currentTime && tab2[j].ta < nextProcessTime) {
-                    nextProcessTime = tab2[j].ta;
+                if (tab2[j].reste > 0 && tab2[j].arrive_time > currentTime && tab2[j].arrive_time < nextProcessTime) {
+                    nextProcessTime = tab2[j].arrive_time;
                 }
             }
 
@@ -85,7 +88,7 @@ int main(int argc, char* argv[]) {
             tab2[currentProcessIndex].tempsfin = currentTime;
 
             // Print details of the executed process
-            printf("%s\t%d\t\t%d\t\t%d\t\t%d\t\t", tab2[currentProcessIndex].id, tab2[currentProcessIndex].ta, tab2[currentProcessIndex].te, tab2[currentProcessIndex].pr, tab2[currentProcessIndex].tempsfin);
+            printf("%s\t%d\t\t%d\t\t%d\t\t%d\t\t", tab2[currentProcessIndex].id, tab2[currentProcessIndex].arrive_time, tab2[currentProcessIndex].burst, tab2[currentProcessIndex].priority, tab2[currentProcessIndex].tempsfin);
             printf("\n");
 
             // Record the executed process index
@@ -106,7 +109,7 @@ int main(int argc, char* argv[]) {
     
 
     // Call the function to display Gantt chart in GTK window
-    displayGanttChartGTK(tab2, output, outputIndex);
+    display_prNonp_interface(tab2, output, outputIndex);
 
    
     return 0;
