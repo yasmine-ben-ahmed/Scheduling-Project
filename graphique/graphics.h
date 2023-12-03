@@ -1,4 +1,6 @@
 #include <gtk/gtk.h>
+#ifndef GRAPHICS_H
+#define GRAPHICS_H
 
 #define ID_LEN 20
 
@@ -20,6 +22,10 @@ typedef struct _process {
 
 // Function prototype for finding the index of the process with the shortest remaining time
 int findShortestRemainingTimeIndex(Process processes[], int n, int currentTime);
+// Forward declaration for get_process_color
+const char* get_process_color(const char* process_id);
+const char* get_process_color_rr(int process_number);
+
 
 // Declare global variables for GTK widgets
 GtkWidget *window, *scrolled_window, *box, *tree_view, *textview, *text_view, *grid, *label;
@@ -90,31 +96,95 @@ void display_order_of_execution_pr(GtkWidget* box, Process tab2[], int output[],
     GtkWidget* order_label = create_markup_label("<span foreground='purple'><big><b>Order of Execution:</b></big></span>");
     gtk_box_pack_start(GTK_BOX(box), order_label, FALSE, FALSE, 0);
 
-    // Create a text view for displaying the order of execution
-    GtkWidget* order_text_view = gtk_text_view_new();
-    gtk_text_view_set_editable(GTK_TEXT_VIEW(order_text_view), FALSE);
-    gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(order_text_view), FALSE);
-
-    // Get the buffer associated with the text view
-    GtkTextBuffer* order_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(order_text_view));
-
-    // Initialize the order_text with a starting symbol
-    gchar* order_text = g_strdup("| ");
+    // Create a grid for the order of execution
+    GtkWidget* order_grid = gtk_grid_new();
+    gtk_grid_set_column_homogeneous(GTK_GRID(order_grid), TRUE);
+    gtk_box_pack_start(GTK_BOX(box), order_grid, FALSE, FALSE, 10);
 
     // Iterate through the output array to create the order of execution text
     for (int i = 0; i < outputIndex; i++) {
-        gchar* process_text = g_strdup_printf("%s", tab2[output[i]].id);
-        order_text = g_strconcat(order_text, process_text, " -------- ", NULL);
-        g_free(process_text);
+        // Create a label for the process
+        GtkWidget* process_label = gtk_label_new(tab2[output[i]].id);
+        
+        // Set background color based on process (you can customize the colors)
+        GdkRGBA color;
+        gdk_rgba_parse(&color, get_process_color(tab2[output[i]].id));
+        gtk_widget_override_background_color(process_label, GTK_STATE_FLAG_NORMAL, &color);
+
+        // Pack the label into the grid
+        gtk_grid_attach(GTK_GRID(order_grid), process_label, i, 0, 1, 1);
     }
 
-    // Insert the order_text into the text buffer
-    gtk_text_buffer_insert_at_cursor(order_buffer, order_text, -1);
-    g_free(order_text);
-
-    // Pack the order text view into the GTK box
-    gtk_box_pack_start(GTK_BOX(box), order_text_view, FALSE, FALSE, 10);
+    // Show all the widgets
+    gtk_widget_show_all(box);
 }
+
+// Function to get a unique color for each process (you can customize this)
+const char* get_process_color(const char* process_id) {
+    // Example: Assign colors based on process_id
+    if (strcmp(process_id, "P1") == 0) {
+        return "#FF0000";  // Red
+    } else if (strcmp(process_id, "P2") == 0) {
+        return "#00FF00";  // Green
+    } else if (strcmp(process_id, "P3") == 0) {
+        return "#0000FF";  // Blue
+    } else {
+        return "#CCCCCC";  // Default color for unknown processes
+    }
+}
+
+void display_order_of_execution_rr(GtkWidget* box, Process tab2[], int output[], int outputIndex) {
+    // Create a label for the order of execution
+    GtkWidget* order_label = create_markup_label("<span foreground='purple'><big><b>Order of Execution:</b></big></span>");
+    gtk_box_pack_start(GTK_BOX(box), order_label, FALSE, FALSE, 0);
+
+    // Create a grid for the order of execution
+    GtkWidget* order_grid = gtk_grid_new();
+    gtk_grid_set_column_homogeneous(GTK_GRID(order_grid), TRUE);
+    gtk_box_pack_start(GTK_BOX(box), order_grid, TRUE, TRUE, 10);
+
+    // Iterate through the output array to create the order of execution text
+    for (int i = 0; i < outputIndex; i++) {
+        // Create a label for the process
+GtkWidget* process_label = gtk_label_new(tab2[output[i]-1].id);
+
+// Set background color based on process (you can customize the colors)
+GdkRGBA color;
+gdk_rgba_parse(&color, get_process_color_rr(output[i]));
+gtk_widget_override_background_color(process_label, GTK_STATE_FLAG_NORMAL, &color);
+
+
+        // Pack the label into the grid
+        gtk_grid_attach(GTK_GRID(order_grid), process_label, i, 0, 1, 1);
+    }
+
+    // Show all the widgets
+    gtk_widget_show_all(box);
+}
+
+
+
+// Function to get a color for each process (replace with your own logic)
+const char* get_process_color_rr(int process_number) {
+    switch (process_number) {
+        case 1:
+            return "#FF0000";  // Red for P1
+        case 2:
+            return "#00FF00";  // Green for P2
+        case 3:
+            return "#0000FF";  // Blue for P3
+        case 4:
+            return "#CCCCCC";  // Yellow for P4
+        default:
+            return "#000000";  // Default to black for unknown processes
+    }
+}
+
+
+
+
+
+
 
 // Function to display the average time label
 void display_average_time_label(GtkWidget* box, const char* label_text, int total_time, int n) {
@@ -136,31 +206,10 @@ void display_average_time_label(GtkWidget* box, const char* label_text, int tota
     g_free(valueMarkup);
 }
 
-// Function to display the order of execution for Round Robin
-void display_order_of_execution_rr(GtkWidget* box, Process tab2[], int output[], int outputIndex) {
-    // Create a label for the order of execution
-    GtkWidget *order_label = gtk_label_new(NULL);
-    gtk_label_set_markup(GTK_LABEL(order_label), "<span foreground='purple'><big><b>Order of Execution:</b></big></span>");
-    gtk_box_pack_start(GTK_BOX(box), order_label, FALSE, FALSE, 7);
-    
-    // Create a text view for the order of execution
-    GtkWidget *order_text_view = gtk_text_view_new();
-    gtk_text_view_set_editable(GTK_TEXT_VIEW(order_text_view), FALSE);
-    gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(order_text_view), FALSE);
 
-    // Create a text buffer for the order of execution
-    GtkTextBuffer *order_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(order_text_view));
 
-    // Display the order of execution
-    for (int i = 0; i < outputIndex; i++) {
-        gchar *process_text = g_strdup_printf("| P%d -------- ", output[i]);
-        gtk_text_buffer_insert_at_cursor(order_buffer, process_text, -1);
-        g_free(process_text);
-    }
 
-    // Pack the text view into the box
-    gtk_box_pack_start(GTK_BOX(box), order_text_view, FALSE, FALSE, 10);
-}
+
 
 // Function to find the index of the process with the shortest remaining time
 int findShortestRemainingTimeIndex(Process processes[], int n, int currentTime) {
@@ -180,4 +229,6 @@ int findShortestRemainingTimeIndex(Process processes[], int n, int currentTime) 
 
     return shortestIndex;
 }
+
+#endif // GRAPHICS_H
 
