@@ -10,26 +10,25 @@ typedef struct _process {
     int arrive_time;
     int burst;
     int priority;
-    int completed;  // RR  
-    int return_time;  // RR
-    int execution_time; // RR burst
-    int reste;  // Priority Non-Preemptive
-    int tempsfin; // Priority Non-Preemptive
-    // SRT
+    int completed;  // For RR  
+    int return_time;  // For RR
+    int execution_time; // For RR burst
+    int reste;  // For Priority Non-Preemptive
+    int tempsfin; // For Priority Non-Preemptive
+    // For SRT
     int remaining_time;
     int completion_time;
 } Process;
 
-// Function prototype for finding the index of the process with the shortest remaining time
-int findShortestRemainingTimeIndex(Process processes[], int n, int currentTime);
-// Forward declaration for get_process_color
+// Forward declaration for process color functions
 const char* get_process_color(const char* process_id);
 const char* get_process_color_rr(int process_number);
-
+const char* get_process_color_srt(int process_number);
 
 // Declare global variables for GTK widgets
 GtkWidget *window, *scrolled_window, *box, *tree_view, *textview, *text_view, *grid, *label;
 GtkTextBuffer *buffer;
+gchar *text;
 
 // Function to create a label with markup
 GtkWidget* create_markup_label(const char* markup) {
@@ -42,7 +41,7 @@ GtkWidget* create_markup_label(const char* markup) {
 GtkWidget* create_window() {
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), "Processes Information");
-    gtk_widget_set_size_request(window, 800, 400);
+    gtk_widget_set_size_request(window, 800, 450);
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
     return window;
 }
@@ -90,107 +89,11 @@ void initialize_and_create_window(GtkWidget **window, GtkWidget **scrolled_windo
     gtk_container_add(GTK_CONTAINER(*scrolled_window), *box);
 }
 
-// Function to display the order of execution for Priority Non-Preemptive
-void display_order_of_execution_pr(GtkWidget* box, Process tab2[], int output[], int outputIndex) {
-    // Create a label for the order of execution
-    GtkWidget* order_label = create_markup_label("<span foreground='purple'><big><b>Order of Execution:</b></big></span>");
-    gtk_box_pack_start(GTK_BOX(box), order_label, FALSE, FALSE, 0);
-
-    // Create a grid for the order of execution
-    GtkWidget* order_grid = gtk_grid_new();
-    gtk_grid_set_column_homogeneous(GTK_GRID(order_grid), TRUE);
-    gtk_box_pack_start(GTK_BOX(box), order_grid, FALSE, FALSE, 10);
-
-    // Iterate through the output array to create the order of execution text
-    for (int i = 0; i < outputIndex; i++) {
-        // Create a label for the process
-        GtkWidget* process_label = gtk_label_new(tab2[output[i]].id);
-        
-        // Set background color based on process (you can customize the colors)
-        GdkRGBA color;
-        gdk_rgba_parse(&color, get_process_color(tab2[output[i]].id));
-        gtk_widget_override_background_color(process_label, GTK_STATE_FLAG_NORMAL, &color);
-
-        // Pack the label into the grid
-        gtk_grid_attach(GTK_GRID(order_grid), process_label, i, 0, 1, 1);
-    }
-
-    // Show all the widgets
-    gtk_widget_show_all(box);
-}
-
-// Function to get a unique color for each process (you can customize this)
-const char* get_process_color(const char* process_id) {
-    // Example: Assign colors based on process_id
-    if (strcmp(process_id, "P1") == 0) {
-        return "#FF0000";  // Red
-    } else if (strcmp(process_id, "P2") == 0) {
-        return "#00FF00";  // Green
-    } else if (strcmp(process_id, "P3") == 0) {
-        return "#0000FF";  // Blue
-    } else {
-        return "#CCCCCC";  // Default color for unknown processes
-    }
-}
-
-void display_order_of_execution_rr(GtkWidget* box, Process tab2[], int output[], int outputIndex) {
-    // Create a label for the order of execution
-    GtkWidget* order_label = create_markup_label("<span foreground='purple'><big><b>Order of Execution:</b></big></span>");
-    gtk_box_pack_start(GTK_BOX(box), order_label, FALSE, FALSE, 0);
-
-    // Create a grid for the order of execution
-    GtkWidget* order_grid = gtk_grid_new();
-    gtk_grid_set_column_homogeneous(GTK_GRID(order_grid), TRUE);
-    gtk_box_pack_start(GTK_BOX(box), order_grid, TRUE, TRUE, 10);
-
-    // Iterate through the output array to create the order of execution text
-    for (int i = 0; i < outputIndex; i++) {
-        // Create a label for the process
-GtkWidget* process_label = gtk_label_new(tab2[output[i]-1].id);
-
-// Set background color based on process (you can customize the colors)
-GdkRGBA color;
-gdk_rgba_parse(&color, get_process_color_rr(output[i]));
-gtk_widget_override_background_color(process_label, GTK_STATE_FLAG_NORMAL, &color);
-
-
-        // Pack the label into the grid
-        gtk_grid_attach(GTK_GRID(order_grid), process_label, i, 0, 1, 1);
-    }
-
-    // Show all the widgets
-    gtk_widget_show_all(box);
-}
-
-
-
-// Function to get a color for each process (replace with your own logic)
-const char* get_process_color_rr(int process_number) {
-    switch (process_number) {
-        case 1:
-            return "#FF0000";  // Red for P1
-        case 2:
-            return "#00FF00";  // Green for P2
-        case 3:
-            return "#0000FF";  // Blue for P3
-        case 4:
-            return "#CCCCCC";  // Yellow for P4
-        default:
-            return "#000000";  // Default to black for unknown processes
-    }
-}
-
-
-
-
-
-
-
 // Function to display the average time label
 void display_average_time_label(GtkWidget* box, const char* label_text, int total_time, int n) {
     // Create a label for Average Time
     GtkWidget* label = gtk_label_new(NULL);
-    gchar* labelMarkup = g_strdup_printf("<span foreground='green'><big><b>%s:</b></big></span>", label_text);
+    gchar* labelMarkup = g_strdup_printf("<span foreground='green'><b>%s:</b></span>", label_text);
     gtk_label_set_markup(GTK_LABEL(label), labelMarkup);
     gtk_box_pack_start(GTK_BOX(box), label, FALSE, FALSE, 0);
 
@@ -206,29 +109,142 @@ void display_average_time_label(GtkWidget* box, const char* label_text, int tota
     g_free(valueMarkup);
 }
 
+/****************************************Order of execution**********************************/
 
+// Function to display the order of execution for Priority Non-Preemptive
+void display_order_of_execution_pr(GtkWidget* box, Process tab2[], int output[], int outputIndex) {
+    // Create a label for the order of execution
+    GtkWidget* order_label = create_markup_label("<span foreground='green'><b>Order of Execution:</b></span>");
+    gtk_box_pack_start(GTK_BOX(box), order_label, FALSE, FALSE, 0);
+    
+    // Create a grid for the order of executions
+    GtkWidget* order_grid = gtk_grid_new();
+    gtk_grid_set_column_homogeneous(GTK_GRID(order_grid), TRUE);
+    gtk_box_pack_start(GTK_BOX(box), order_grid, FALSE, FALSE, 10);
 
+    // Iterate through the output array to create the order of execution text
+    for (int i = 0; i < outputIndex; i++) {
+        // Create a label for the process
+        GtkWidget* process_label = gtk_label_new(tab2[output[i]].id);
+        
+        // Set background color based on process (customize the colors)
+        GdkRGBA color;
+        gdk_rgba_parse(&color, get_process_color(tab2[output[i]].id));
+        gtk_widget_override_background_color(process_label, GTK_STATE_FLAG_NORMAL, &color);
 
-
-
-// Function to find the index of the process with the shortest remaining time
-int findShortestRemainingTimeIndex(Process processes[], int n, int currentTime) {
-    int shortestIndex = -1;
-    int shortestTime = INT_MAX;
-
-    // Iterate through the processes
-    for (int i = 0; i < n; i++) {
-        // Check if the process has arrived, has remaining time, and has shorter remaining time
-        if (processes[i].arrive_time <= currentTime &&
-            processes[i].remaining_time < shortestTime &&
-            processes[i].remaining_time > 0) {
-            shortestIndex = i;
-            shortestTime = processes[i].remaining_time;
-        }
+        // Pack the label into the grid
+        gtk_grid_attach(GTK_GRID(order_grid), process_label, i, 0, 1, 1);
     }
 
-    return shortestIndex;
+    // Show all the widgets
+    gtk_widget_show_all(box);
 }
+
+// Function to get process color based on process ID
+const char* get_process_color(const char* process_id) {
+    // Assign colors based on process_id
+    if (strcmp(process_id, "P1") == 0) {
+        return "#FF6347";  // Tomato red for P1
+    } else if (strcmp(process_id, "P2") == 0) {
+        return "#FFD700";  // Gold for P2
+    } else if (strcmp(process_id, "P3") == 0) {
+        return "#00CED1";  // Dark turquoise for P3
+    } else if (strcmp(process_id, "P4") == 0) {
+        return "#9370DB";  // Medium purple for P4
+    } else {
+        return "#CCCCCC";  // Default color for unknown processes
+    }
+}
+
+// Display the order of execution for Round Robin
+void display_order_of_execution_rr(GtkWidget* box, Process tab2[], int output[], int outputIndex) {
+    // Create a label for the order of execution
+    GtkWidget* order_label = create_markup_label("<span foreground='green'><b>Order of Execution:</b></span>");
+    gtk_box_pack_start(GTK_BOX(box), order_label, FALSE, FALSE, 0);
+
+    // Create a grid for the order of execution
+    GtkWidget* order_grid = gtk_grid_new();
+    gtk_grid_set_column_homogeneous(GTK_GRID(order_grid), TRUE);
+    gtk_box_pack_start(GTK_BOX(box), order_grid, TRUE, TRUE, 10);
+
+    // Iterate through the output array to create the order of execution text
+    for (int i = 0; i < outputIndex; i++) {
+        // Create a label for the process
+        GtkWidget* process_label = gtk_label_new(tab2[output[i] - 1].id);
+
+        // Set background color based on process (customize the colors)
+        GdkRGBA color;
+        gdk_rgba_parse(&color, get_process_color_rr(output[i]));
+        gtk_widget_override_background_color(process_label, GTK_STATE_FLAG_NORMAL, &color);
+
+        // Pack the label into the grid
+        gtk_grid_attach(GTK_GRID(order_grid), process_label, i, 0, 1, 1);
+    }
+
+    // Show all the widgets
+    gtk_widget_show_all(box);
+}
+
+// Get process color for Round Robin based on process number
+const char* get_process_color_rr(int process_number) {
+    switch (process_number) {
+        case 1:
+            return "#FFA07A";  // Light salmon for P1
+        case 2:
+            return "#32CD32";  // Lime green for P2
+        case 3:
+            return "#4682B4";  // Steel blue for P3
+        case 4:
+            return "#A9A9A9";  // Dark gray for P4
+        default:
+            return "#000000";  // Default to black for unknown processes
+    }
+}
+
+// Display the order of execution for Shortest Remaining Time
+void display_order_of_execution_srt(GtkWidget* box, Process processes[], int output[], int outputIndex) {
+    // Create a label for the order of execution
+    GtkWidget* order_label = create_markup_label("<span foreground='green'><b>Order of Execution:</b></span>");
+    gtk_box_pack_start(GTK_BOX(box), order_label, FALSE, FALSE, 0);
+
+    // Create a grid to display the processes
+    GtkWidget *order_grid = gtk_grid_new();
+    gtk_grid_set_column_homogeneous(GTK_GRID(order_grid), TRUE);
+    gtk_box_pack_start(GTK_BOX(box), order_grid, TRUE, TRUE, 10);
+
+    // Iterate through the output sequence
+    for (int i = 0; i < outputIndex; i++) {
+        GtkWidget *process_label = gtk_label_new(processes[output[i]].id);
+        
+        // Set background color based on process
+        GdkRGBA color;
+        gdk_rgba_parse(&color, get_process_color_srt(output[i] + 1));  // Adjusting the process index by 1
+        gtk_widget_override_background_color(process_label, GTK_STATE_FLAG_NORMAL, &color);
+
+        // Add label to the grid
+        gtk_grid_attach(GTK_GRID(order_grid), process_label, i, 0, 1, 1); // Attach to the grid at position (i, 0)
+    }
+
+    // Show all widgets
+    gtk_widget_show_all(box);
+}
+
+// Get process color for Shortest Remaining Time based on process number
+const char* get_process_color_srt(int process_number) {
+    switch (process_number) {
+        case 1:
+            return "#FF6F61";  // Coral red for P1
+        case 2:
+            return "#70A288";  // Sage green for P2
+        case 3:
+            return "#6B5B95";  // Royal purple for P3
+        case 4:
+            return "#FFB14E";  // Peach for P4
+        default:
+            return "#000000";  // Default to black for unknown processes
+    }
+}
+
 
 #endif // GRAPHICS_H
 

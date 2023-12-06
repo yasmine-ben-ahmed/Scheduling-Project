@@ -9,7 +9,7 @@ int output[20]; // Record the sequence of executed processes
 int outputIndex = 0; // Index for the output array
 
 // Function declarations
-void displayProcessStats(Process tab2[], int n);
+void displayProcessStats_pr(Process tab2[], int n);
 void PrioritéNonP(Process tab2[], int n);
 void Gantt_Chart(Process tab2[], int n);
 
@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
     PrioritéNonP(tab2, n);
 
     // Display process statistics
-    displayProcessStats(tab2, n);
+    displayProcessStats_pr(tab2, n);
 
     // Display the Gantt chart
     Gantt_Chart(tab2, n);
@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
 }
 
 // Function to display process statistics
-void displayProcessStats(Process tab2[], int n) {
+void displayProcessStats_pr(Process tab2[], int n) {
     printf("\n");
     printf("\n");
     printf("Process\tWaiting Time\tTurnaround Time\n");

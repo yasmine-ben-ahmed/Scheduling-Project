@@ -1,5 +1,5 @@
 #include <graphics.h>
-
+#include <../code/SRT.h>
 
 /*================================================================*/
 /**********________priorité_non_preemptive_Interface________********/
@@ -14,6 +14,13 @@ void display_prNonp_interface(Process tab2[], int output[], int outputIndex) {
     // Create a label for the Priority Non-Preemptive algorithm
     GtkWidget* pr_label = create_markup_label("<span foreground='purple'><big><b>Priorite Non Preemptive Algorithm </b></big></span>");
     gtk_box_pack_start(GTK_BOX(box), pr_label, FALSE, FALSE, 0);
+    
+/***********************________Order of execution________********************/    
+
+    // Display order of execution
+    display_order_of_execution_pr(box, tab2, output, outputIndex);
+    
+/***********************________Process Information In Table________********************/  
 
     // Create a list store to store data for the tree view
     GtkListStore *list_store;
@@ -56,6 +63,8 @@ void display_prNonp_interface(Process tab2[], int output[], int outputIndex) {
         column = gtk_tree_view_column_new_with_attributes(column_names[i], renderer, "text", i, NULL);
         gtk_tree_view_append_column(GTK_TREE_VIEW(tree_view), column);
     }
+    
+/***********************________Calculate and Display Averages ________********************/  
 
     // Declare variables for the order of execution loop
     char outputt[100]; // Buffer to store formatted output
@@ -74,9 +83,6 @@ void display_prNonp_interface(Process tab2[], int output[], int outputIndex) {
     // Display average turnaround time label
     display_average_time_label(box, "Average Turnaround Time (TRM)", totalTurnaroundTime, n);
 
-    // Display order of execution
-    display_order_of_execution_pr(box, tab2, output, outputIndex);
-
     // Show all the widgets in the GTK window
     gtk_widget_show_all(window);
 
@@ -84,7 +90,6 @@ void display_prNonp_interface(Process tab2[], int output[], int outputIndex) {
     gtk_main();
 }
 
-	
 /*================================================================*/
 /**********________Round-Robin_Interface________********/
 /*================================================================*/
@@ -98,10 +103,15 @@ void display_roundrobin_interface(Process tab2[], int output[], int outputIndex,
     // Create a label for the Round Robin algorithm
     GtkWidget* pr_label = create_markup_label("<span foreground='purple'><big><b>Round Robin -RR- Algorithm </b></big></span>");
     gtk_box_pack_start(GTK_BOX(box), pr_label, FALSE, FALSE, 0);
+    
+/***********************________Order of execution________********************/   
 
-    /******************* Display Process Information Tree View *******************/
+    // Display order of execution
+    display_order_of_execution_rr(box, tab2, output, outputIndex);
+    
+/***********************________Process Information In Table________********************/  
 
-    // Create a list store to hold the data to be displayed in the tree view
+    // Display Process Information Tree View
     GtkListStore *list_store;
     list_store = gtk_list_store_new(6, G_TYPE_STRING, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT);
 
@@ -138,10 +148,10 @@ void display_roundrobin_interface(Process tab2[], int output[], int outputIndex,
         column = gtk_tree_view_column_new_with_attributes(column_names[i], renderer, "text", i, NULL);
         gtk_tree_view_append_column(GTK_TREE_VIEW(tree_view), column);
     }
+    
+/***********************________Calculate and Display Averages ________********************/ 
 
-    /************************* Calculate and Display Averages **************************/
-
-    // Declare variables for the order of execution loop
+    // Calculate and Display Averages
     char outputt[100]; // Adjust the size as needed
     int n = outputIndex; // Correct the value of n
     int totalWaitingTime = 0, totalTurnaroundTime = 0; // Declare the variables here
@@ -158,13 +168,6 @@ void display_roundrobin_interface(Process tab2[], int output[], int outputIndex,
     // Display average turnaround time label
     display_average_time_label(box, "Average Turnaround Time (TRM)", totalTurnaroundTime, n);
 
-    /************************* Display Order of Execution **************************/
-
-    // Display order of execution
-    display_order_of_execution_rr(box, tab2, output, outputIndex);
-
-    /*******************************************************************************/
-
     // Show all the widgets in the GTK window
     gtk_widget_show_all(window);
 
@@ -172,14 +175,17 @@ void display_roundrobin_interface(Process tab2[], int output[], int outputIndex,
     gtk_main();
 }
 
-
-
 /*================================================================*/
 /**********________SRT_Interface________********/
 /*================================================================*/
 
-// Function to display the interface for Shortest Remaining Time First (SRT) scheduling algorithm
 void display_SRT_interface(Process processes[], int n, int output[], int outputIndex) {
+    // Console output of the sequence of processes
+    printf("Sequence of processes console from srt inter: ");
+    for (int i = 0; i < outputIndex; i++) {
+        printf("%s ", processes[output[i]].id);
+    }
+    printf("\n");
 
     // Initialize GTK
     gtk_init(NULL, NULL);
@@ -192,21 +198,21 @@ void display_SRT_interface(Process processes[], int n, int output[], int outputI
     GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
 
     // Create and configure the header label
-    GtkWidget *header_label = gtk_label_new(NULL);
+    GtkWidget *header_label = gtk_label_new(NULL); 
     gtk_label_set_markup(GTK_LABEL(header_label), "<span foreground='purple'><big><b>Shortest Remaining Time First-SRT Algorithm</b></big></span>");
     gtk_box_pack_start(GTK_BOX(box), header_label, FALSE, FALSE, 7);
 
     // Insert a separator
     gtk_text_buffer_insert_at_cursor(buffer, "\n\n", -1);
+    
+/***********************________Order of execution________********************/   
 
-    /******************* Display Process Information Tree View *******************/
+    // Display order of execution
+    display_order_of_execution_srt(box, processes, output, outputIndex);
+    
+/***********************________Process Information In Table________********************/   
 
-    // Generate and populate the output array with valid indices
-    for (int i = 0; i < n; i++) {
-        output[i] = i;
-    }
-
-    // Create a list store to hold the data to be displayed in the tree view
+    // Display Process Information Tree View
     GtkListStore *list_store;
     list_store = gtk_list_store_new(6, G_TYPE_STRING, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT);
 
@@ -251,10 +257,10 @@ void display_SRT_interface(Process processes[], int n, int output[], int outputI
 
     // Attach the tree view to the box
     gtk_box_pack_start(GTK_BOX(box), tree_view, TRUE, TRUE, 0);
+    
+/***********************________Calculate and Display Averages ________********************/ 
 
-    /************************* Calculate and Display Averages **************************/
-
-    // Declare variables for the order of execution loop
+    // Calculate and Display Averages
     char outputt[100]; // Adjust the size as needed
     int totalWaitingTime = 0, totalTurnaroundTime = 0; // Declare the variables here
 
@@ -273,8 +279,6 @@ void display_SRT_interface(Process processes[], int n, int output[], int outputI
     // Display average turnaround time label
     display_average_time_label(box, "Average Turnaround Time (TRM)", totalTurnaroundTime, n);
 
-    /*************************************/
-
     // Pack the textview into the box
     gtk_box_pack_start(GTK_BOX(box), textview, TRUE, TRUE, 0);
 
@@ -287,12 +291,7 @@ void display_SRT_interface(Process processes[], int n, int output[], int outputI
     // Show all widgets
     gtk_widget_show_all(window);
 
-    // Run the GTK main loop
+    // Main GTK loop
     gtk_main();
 }
-
-
-
-
-
 

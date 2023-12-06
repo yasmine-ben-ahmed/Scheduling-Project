@@ -13,7 +13,7 @@ int time_quantum; // Variable to store the time quantum
 #define MAX_PROCESSES 100 // Define the maximum number of processes
 
 // Function declarations
-void displayProcessStats(Process tab2[], int n);
+void displayProcessStats_rr(Process tab2[], int n);
 void Round_Robin(Process tab2[], int n);
 void Gantt_Chart(Process tab2[], int n); 
 
@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
     Round_Robin(tab2, np);
 
     // Display process statistics
-    displayProcessStats(tab2, np);
+    displayProcessStats_rr(tab2, np);
 
     // Display the Gantt chart
     Gantt_Chart(tab2, np);
@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
 }
 
 // Function to display process statistics
-void displayProcessStats(Process tab2[], int n) {
+void displayProcessStats_rr(Process tab2[], int n) {
     printf("\n");
     printf("\n");
     printf("Process\tWaiting Time\tTurnaround Time\n");
