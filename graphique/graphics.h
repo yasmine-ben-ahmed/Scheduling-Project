@@ -3,6 +3,10 @@
 #define GRAPHICS_H
 
 #define ID_LEN 20
+#define MAX 100
+#define ID_LEN 20
+#define TRUE 1
+#define FALSE 0
 
 // Structure to represent a process
 typedef struct _process {
@@ -18,6 +22,10 @@ typedef struct _process {
     // For SRT
     int remaining_time;
     int completion_time;
+    //for prprem
+    int waiting_time;
+    int turnaround_time;
+    int response_time;
 } Process;
 
 // Forward declaration for process color functions

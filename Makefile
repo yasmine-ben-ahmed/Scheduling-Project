@@ -1,5 +1,5 @@
-FILE_CODE_SRC = code
-FILE_EXEC = exec
+FILE_CODE_SRC = Algorithm
+FILE_EXEC = executable
 GRAPHIQUE_DIR = graphique
 GTK_INCLUDE = `pkg-config --cflags gtk+-3.0`
 GTK_LIBS = `pkg-config --libs gtk+-3.0`
@@ -12,4 +12,6 @@ file_executables: ${FILE_CODE_SRC}/*.c
 
 clean:
 	rm -f *.o main ${FILE_EXEC}/*
+
+
 

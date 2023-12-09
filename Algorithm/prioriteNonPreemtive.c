@@ -102,7 +102,7 @@ void displayProcessStats_pr(Process tab2[], int n) {
 void PrioritéNonP(Process tab2[], int n) {
     int currentTime = tab2[0].arrive_time; // Set the initial time to the arrival time of the first process
 
-    printf(" **** Priority Process Scheduling ****\n");
+    printf(" **** Priority Process Scheduling without preemption****\n");
     printf("Process\tArrival Time\tExecution Time\tPriority\tCompletion Time\n");
 
     // Continue scheduling until all processes are completed

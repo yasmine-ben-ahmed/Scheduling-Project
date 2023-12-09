@@ -68,9 +68,21 @@ int main(int argc, char *argv[]) {
 
     // Display the Gantt chart
     Gantt_Chart(tab2, np);
+    
+         printf("\n");
+     
+    // Print the content of the output array
+    /*printf("Contents of the 'output' array:\n");
+    for (int j = 0; j < outputIndex; j++) {
+        printf("%d ", output[j]);
+    }
+    printf("\n");*/
+    
+    
+    
 
     // Call the function to display Gantt chart in GTK window
-    display_roundrobin_interface(tab2, output, outputIndex, time_quantum);
+    display_roundrobin_interface(tab2, output, outputIndex,np, time_quantum);
 
     return 0;
 }

@@ -74,7 +74,7 @@ int main (int argc , char **argv){
 	ver = 0;
 	
 	
-	strcpy(path, "./exec/");
+	strcpy(path, "./executable/");
 	strcpy(default_algo, "fifo");
 	
 	result = dynamic_menu_selection(path, 0, &nbf, selectedFileName);

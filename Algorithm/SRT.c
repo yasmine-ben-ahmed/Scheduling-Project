@@ -79,8 +79,8 @@ int main(int argc, char* argv[]) {
     display_SRT_interface(tab2, n, output, outputIndex);
 
     // Free allocated memory
-    free(output);  // Free memory allocated for output array
-    free(tab2);
+  //  free(output);  // Free memory allocated for output array
+  //  free(tab2);
     return 0;
 }
 
