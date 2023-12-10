@@ -45,8 +45,10 @@ void sortByArrivalTime(Process processes[], int n) {
 
 
 
-void SRT(Process processes[], int n, int output[], int *outputIndex) {
-    int currentTime = 0;
+void SRT(Process processes[], int n) {
+    sortByArrivalTime(processes, n); // Sort processes by arrival time
+
+    int currentTime = processes[0].arrive_time;
 
     printf("Sequence of processes in SRT: ");
 
@@ -58,8 +60,11 @@ void SRT(Process processes[], int n, int output[], int *outputIndex) {
         }
 
         printf("%s ", processes[index].id);
+        
 
-        output[(*outputIndex)++] = index; // Store the index of the process in the output array
+        output[outputIndex++] = index; // Store the index
+
+      
 
         processes[index].remaining_time--;
 
@@ -69,5 +74,7 @@ void SRT(Process processes[], int n, int output[], int *outputIndex) {
 
         currentTime++;
     }
+    
 }
+
 

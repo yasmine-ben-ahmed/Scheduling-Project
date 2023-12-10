@@ -1,12 +1,35 @@
+#include "SJF.h" // Include header file for SJF algorithm
 #include "SJF.h"
-
-
+// Function to compare arrival times of processes for sorting
 int compareArrivalTime(const void *a, const void *b) {
     return ((Process *)a)->arrive_time - ((Process *)b)->arrive_time;
 }
 
 GdkRGBA timeline_color = {0.0, 0.0, 0.0, 0.5}; // Adjust the alpha value as needed
 
+// Function to implement First-In-First-Out (FIFO) algorithm
+void FIFO(Process *process, int np) {
+    // Sort processes based on arrival time using qsort
+    qsort(process, np, sizeof(Process), compareArrivalTime);
+
+    // Calculate finishing time, waiting time, and turnaround time
+    int currentTime = 0;
+    for (int i = 0; i < np; i++) {
+        // Calculate finishing time
+        process[i].tempsfin = currentTime + process[i].burst;
+
+        // Calculate waiting time and turnaround time
+        process[i].waitingTime = currentTime - process[i].arrive_time;
+        process[i].turnaroundTime = process[i].waitingTime + process[i].burst;
+
+        currentTime = process[i].tempsfin; // Update current time for the next iteration
+    }
+}
+
+
+/*================================================================*/
+/**********________FIFO_Interface________********/
+/*================================================================*/
 
 static void show_table_FIFO(GtkWidget *widget, gpointer data) {
     Process *process_data = (Process *)data;
@@ -28,7 +51,7 @@ static void show_table_FIFO(GtkWidget *widget, gpointer data) {
     for (int i = 0; process_data[i].id[0] != '\0'; i++) {
         gtk_list_store_append(list_store, &iter);
         gtk_list_store_set(list_store, &iter, 0, process_data[i].id,
-                                        1, process_data[i].start_time,
+                                        1, process_data[i].arrive_time,
                                         2, process_data[i].burst,
                                         3, process_data[i].finish_time, -1);
 
@@ -121,13 +144,12 @@ static void show_diagram_FIFO(GtkWidget *widget, gpointer data) {
 
 
 /******************************************************************************/
+// Function to initialize GUI for FIFO algorithm
 void initializeGUI_FIFO(int argc, char *argv[], Process *process, int np) {
-   // qsort(process, np, sizeof(Process), compareBurstTime);
-
     gtk_init(&argc, &argv);
 
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    gtk_window_set_title(GTK_WINDOW(window), " Processes_Information_SRT ");
+    gtk_window_set_title(GTK_WINDOW(window), " Processes_Information_FIFO ");
     gtk_window_set_default_size(GTK_WINDOW(window), 400, 200);
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
@@ -147,5 +169,4 @@ void initializeGUI_FIFO(int argc, char *argv[], Process *process, int np) {
 
     gtk_main();
 }
-
 

@@ -1,6 +1,6 @@
 #include "SJF.h"
 
-// Function to implement Shortest Job First (SJF)
+// Function to implement Shortest Job First (SJF) algorithm
 void SJF(Process *process, int np) {
     // Sort processes based on burst time using qsort
     qsort(process, np, sizeof(Process), compareBurstTime);
@@ -19,30 +19,26 @@ void SJF(Process *process, int np) {
     }
 }
 
-
-
-
-
 int main(int argc, char *argv[]) {
-    int np = 0;
+    int np = 0; // Number of processes
 
-	if (argc != 2) {
-	    printf("Usage: %s input_file\n", argv[0]);
-	    return 1;
-	}
+    if (argc != 2) {
+        printf("Usage: %s input_file\n", argv[0]);
+        return 1;
+    }
 
-	FILE *fp = fopen(argv[1], "r");
-	if (fp == NULL) {
-	    perror("Error opening file");
-	    return 1;
-	}
+    FILE *fp = fopen(argv[1], "r");
+    if (fp == NULL) {
+        perror("Error opening file");
+        return 1;
+    }
 
-	char line[500];
-	while (fgets(line, sizeof(line), fp)) {
-	    if (np >= MAX_PROCESSES) {
-		printf("Too many processes!\n");
-		break;
-	    }
+    char line[500];
+    while (fgets(line, sizeof(line), fp)) {
+        if (np >= MAX_PROCESSES) {
+            printf("Too many processes!\n");
+            break;
+        }
 
         int arrive_time, burst;
         char id[ID_LEN];
@@ -52,24 +48,25 @@ int main(int argc, char *argv[]) {
             process[np].arrive_time = arrive_time;
             process[np].burst = burst;
 
-		parseProcessColor(process, np);
-
+            parseProcessColor(process, np);
 
             np++;
         }
     }
 
     fclose(fp);
-    
-    // Display process information in the console
+
+    // Calculate process information based on SJF algorithm
     SJF(process, np);
-    
-     displayGanttChart(process,np);
-    
-     displayProcessTable(process,np); 
 
+    // Display Gantt chart for visualization
+    displayGanttChart(process, np);
 
-	initializeGUI_SJF(argc, argv, process, np);
+    // Display process table in the console
+    displayProcessTable(process, np);
+
+    // Initialize SJF algorithm GUI (if applicable)
+    initializeGUI_SJF(argc, argv, process, np);
 
     return 0;
 }

@@ -3,10 +3,10 @@
 #include <limits.h>
 #include <string.h>
 
-#include <../graphique/ProcessesInterface.h>
+#include <../graphique/ProcessesInterface.h> // Includes an external interface for processes
 
 // Function declarations
-void displayProcessStats_srt(Process processes[], int n);
+void displayProcessStats_srt(Process processes[], int n); // Function to display process statistics
 
 // Main function
 int main(int argc, char* argv[]) {
@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
     fscanf(fp, "%d", &n);
 
     // Dynamic memory allocation for an array of processes
-    Process *tab2 = (Process *)malloc(n * sizeof(Process));
+    Process *tab2 = (Process *)malloc(n * sizeof(Process)); // Allocates memory for processes
 
     if (tab2 == NULL) {
         printf("Memory allocation failed.\n");
@@ -41,11 +41,13 @@ int main(int argc, char* argv[]) {
         int arrival_time, burst_time, priority;
         char process_id[ID_LEN];
 
+        // Read process details from the file
         if (fscanf(fp, "%s %d %d %d", process_id, &arrival_time, &burst_time, &priority) != 4) {
             printf("Invalid input format.\n");
             return 1;
         }
 
+        // Store details in the array
         strcpy(tab2[i].id, process_id);
         tab2[i].arrive_time = arrival_time;
         tab2[i].burst = burst_time;
@@ -56,60 +58,50 @@ int main(int argc, char* argv[]) {
     // Close the file
     fclose(fp);
     
-        // Sort processes by arrival time
+    // Sort processes by arrival time
     sortByArrivalTime(tab2, n);
 
-
     // Perform Shortest Remaining Time First (SRTF) scheduling
-    int *output = malloc(n * sizeof(int));  // Allocate memory for output array
-
-    if (output == NULL) {
-        printf("Memory allocation failed.\n");
-        free(tab2);  // Free memory allocated for tab2 before exiting
-        return 1;
-    }
-
-    int outputIndex = 0;
-    SRT(tab2, n, output, &outputIndex);  // Pass output array and its index
+    SRT(tab2, n);  // Executes SRTF algorithm on the processes
 
     // Display process statistics in the console
-    displayProcessStats_srt(tab2, n);
+    displayProcessStats_srt(tab2, n); // Displays process statistics
 
+    printf("\n srt.c  pb before display_order_of_execution_srt function"); 
     // Display the SRT interface and the sequence of processes
-    display_SRT_interface(tab2, n, output, outputIndex);
-
-    // Free allocated memory
-  //  free(output);  // Free memory allocated for output array
-  //  free(tab2);
+    display_SRT_interface(tab2, n, output, outputIndex); // Needs output and outputIndex variables
+    
+    
     return 0;
 }
 
-
-// Function to display process statistics
+// Function to display process statistics for SRT scheduling
 void displayProcessStats_srt(Process processes[], int n) {
     printf("\n");
-    printf("\n");
-
-    printf("Process\tWaiting Time\tTurnaround Time\n");
+    printf("Process\tArrival Time\tBurst Time\tWaiting Time\tTurnaround Time\n");
     int totalWaitingTime = 0, totalTurnaroundTime = 0;
 
-    // Calculate and display waiting and turnaround times for each process
     for (int i = 0; i < n; i++) {
+        // Calculate the turnaround time and waiting time
         int turnaroundTime = processes[i].completion_time - processes[i].arrive_time;
         int waitingTime = turnaroundTime - processes[i].burst;
 
         totalWaitingTime += waitingTime;
         totalTurnaroundTime += turnaroundTime;
 
-        printf("%s\t%d\t\t%d\n", processes[i].id, waitingTime, turnaroundTime);
+        // Display individual process stats
+        printf("%s\t%d\t\t%d\t\t%d\t\t%d\n",
+            processes[i].id,
+            processes[i].arrive_time,
+            processes[i].burst,
+            waitingTime,
+            turnaroundTime
+        );
     }
-    
-    printf("\n");
-    printf("\n");
 
     // Display average waiting and turnaround times
-    printf("(TRM) Average Waiting Time: %.2f\n", (float)totalWaitingTime / n);
+    printf("\n(TRM) Average Waiting Time: %.2f\n", (float)totalWaitingTime / n);
     printf("(TAM) Average Turnaround Time: %.2f\n", (float)totalTurnaroundTime / n);
-
     printf("\n");
 }
+

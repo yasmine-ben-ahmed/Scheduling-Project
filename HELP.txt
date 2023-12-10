@@ -1,0 +1,10 @@
+GTK library for graphical interfaces.
+To install GTK3: `apt install libgtk-3-dev`
+
+Compile: `make`
+Execute: `./main ./inputs.txt`
+Note: Program generates random process data with each execution and put it inside inputs.txt file. 
+
+Note: Data.txt file used for testing constant process data.
+
+NB: This version with comments.

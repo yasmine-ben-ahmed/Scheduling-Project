@@ -1,6 +1,5 @@
 #include <graphics.h>
 #include <../Algorithm/SRT.h>
-const char* get_process_color_prprem(int process_number);
 
 /*================================================================*/
 /**********________priorité_non_preemptive_Interface________********/
@@ -114,7 +113,7 @@ void display_roundrobin_interface(Process tab2[], int output[], int outputIndex,
 
     // Display Process Information Tree View
     GtkListStore *list_store;
-    list_store = gtk_list_store_new(4, G_TYPE_STRING, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT);
+    list_store = gtk_list_store_new(3, G_TYPE_STRING, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT);
 
     // Fill the list store with process information
     for (int i = 0; i < outputIndex; i++) {
@@ -129,7 +128,7 @@ void display_roundrobin_interface(Process tab2[], int output[], int outputIndex,
                            0, tab2[output[i] - 1].id,
                            1, tab2[output[i] - 1].arrive_time,
                            2, tab2[output[i] - 1].execution_time,
-                           3, tab2[output[i] - 1].completion_time,
+                           //3, tab2[output[i] - 1].completion_time,
                            -1);
     }
 
@@ -138,8 +137,8 @@ void display_roundrobin_interface(Process tab2[], int output[], int outputIndex,
     gtk_box_pack_start(GTK_BOX(box), tree_view, TRUE, TRUE, 0);
 
     // Add columns to the tree view with titles (header names)
-    const char *column_names[] = {"Process", "Arrival Time", "Execution Time", "Completion Time"};
-    for (int i = 0; i < 4; i++) {
+    const char *column_names[] = {"Process", "Arrival Time", "Execution Time"};
+    for (int i = 0; i < 3; i++) {
         GtkCellRenderer *renderer;
         GtkTreeViewColumn *column;
 
@@ -248,7 +247,8 @@ void display_SRT_interface(Process processes[], int n, int output[], int outputI
     // Insert a separator
     gtk_text_buffer_insert_at_cursor(buffer, "\n\n", -1);
     
-/***********************________Order of execution________********************/   
+/***********************________Order of execution________********************/  
+
 
     // Display order of execution
     display_order_of_execution_srt(box, processes, output, outputIndex);
@@ -272,11 +272,11 @@ void display_SRT_interface(Process processes[], int n, int output[], int outputI
         if (output[i] >= 0 && output[i] < n) {
             gtk_list_store_set(list_store, &iter,
                                0, processes[i].id,
-                               1, processes[output[i]].arrive_time,
-                               2, processes[output[i]].burst,
+                               1, processes[i].arrive_time,
+                               2, processes[i].burst,
                                3, waitingTime,
                                4, turnaroundTime,
-                               5, processes[output[i]].completion_time,
+                               5, processes[i].completion_time,
                                -1);
         } else {
             // Handle the case where output[i] is an invalid index
@@ -338,52 +338,6 @@ void display_SRT_interface(Process processes[], int n, int output[], int outputI
     gtk_main();
 }
 
-void display_order_of_execution_prprem(GtkWidget* box, Process tab2[], int output[], int outputIndex) {
-    // Create a label for the order of execution
-    GtkWidget* order_label = create_markup_label("<span foreground='green'><b>Order of Execution:</b></span>");
-    gtk_box_pack_start(GTK_BOX(box), order_label, FALSE, FALSE, 0);
-
-    // Create a grid for the order of execution
-    GtkWidget* order_grid = gtk_grid_new();
-    gtk_grid_set_column_homogeneous(GTK_GRID(order_grid), TRUE);
-    gtk_box_pack_start(GTK_BOX(box), order_grid, TRUE, TRUE, 10);
-
-    // Iterate through the output array to create the order of execution text
-    for (int i = 0; i < outputIndex; i++) {
-        // Create a label for the process
-        GtkWidget* process_label = gtk_label_new(tab2[output[i] - 1].id);
-
-        // Set background color based on process (customize the colors)
-        GdkRGBA color;
-        gdk_rgba_parse(&color, get_process_color_rr(output[i]));
-        gtk_widget_override_background_color(process_label, GTK_STATE_FLAG_NORMAL, &color);
-
-        // Pack the label into the grid
-        gtk_grid_attach(GTK_GRID(order_grid), process_label, i, 0, 1, 1);
-    }
-
-    // Show all the widgets
-    gtk_widget_show_all(box);
-}
-
-
-
-// Get process color for Round Robin based on process number
-const char* get_process_color_prprem(int process_number) {
-    switch (process_number) {
-        case 1:
-            return "#FFA07A";  // Light salmon for P1
-        case 2:
-            return "#32CD32";  // Lime green for P2
-        case 3:
-            return "#4682B4";  // Steel blue for P3
-        case 4:
-            return "#A9A9A9";  // Dark gray for P4
-        default:
-            return "#000000";  // Default to black for unknown processes
-    }
-}
-
 
 /*================================================================*/
 /**********________Priority_preemption_Scheduling_Interface________********/
@@ -400,8 +354,6 @@ void display_prprem_interface(Process tab2[], int output[], int outputIndex, int
     gtk_box_pack_start(GTK_BOX(box), pr_label, FALSE, FALSE, 0);
     
 /***********************________Order of execution________********************/ 
-
-  
 
     // Display order of execution
      display_order_of_execution_prprem( box, tab2,  output, outputIndex) ;

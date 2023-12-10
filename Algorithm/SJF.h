@@ -94,31 +94,33 @@ int compareBurstTime(const void *a, const void *b) {
 static gboolean draw_callback(GtkWidget *widget, cairo_t *cr, gpointer data) {
     Process *process_data = (Process *)data;
 
-    double x = 50.0, y = 50.0, width, height = 60.0;
+    double x = 30.0, y = 30.0; // Initial position
+    double width, height = 30.0; // Initial width and height
 
     for (int i = 0; process_data[i].id[0] != '\0'; i++) {
-        width = process_data[i].burst * 80.0;
+        width = process_data[i].burst * 30.0; // Adjust width based on burst time
 
         gdk_cairo_set_source_rgba(cr, &process_data[i].color);
 
         cairo_rectangle(cr, x, y, width, height);
         cairo_fill_preserve(cr);	
-// Set the color for the border (white)
-//cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
-        cairo_stroke(cr);
+        cairo_stroke(cr); // Border
 
+        // Set up text properties
         cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
         cairo_set_font_size(cr, 17.0); 
-
         cairo_set_source_rgb(cr, 0.0, 0.0, 0.0); // Black text color
+
+        // Center text within each rectangle
         cairo_move_to(cr, x + width / 2.0 - 10, y + height / 2.0);
         cairo_show_text(cr, process_data[i].id);
 
-        x += width;
+        x += width; // Update x position for the next rectangle
     }
 
     return FALSE;
 }
+
 
 
 // Function to create a label with markup
