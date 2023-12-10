@@ -13,7 +13,7 @@ int input() {
     }
 
     fprintf(fp, "4\n");
-    printf("Number of processes: 4\n");
+    printf("Number of processes generated randomly: 4\n");
 
     for (int i = 1; i <= 4; i++) {
         int arrival_time =  rand() % 10;
