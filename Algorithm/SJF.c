@@ -1,26 +1,19 @@
 #include "SJF.h"
 
-// Function to implement Shortest Job First (SJF) algorithm
 void SJF(Process *process, int np) {
-    // Sort processes based on burst time using qsort
     qsort(process, np, sizeof(Process), compareBurstTime);
 
-    // Calculate finishing time, waiting time, and turnaround time
     int currentTime = 0;
     for (int i = 0; i < np; i++) {
-        // Calculate finishing time
         process[i].tempsfin = currentTime + process[i].burst;
-
-        // Calculate waiting time and turnaround time
         process[i].waitingTime = currentTime - process[i].arrive_time;
         process[i].turnaroundTime = process[i].waitingTime + process[i].burst;
-
-        currentTime = process[i].tempsfin; // Update current time for the next iteration
+        currentTime = process[i].tempsfin;
     }
 }
 
 int main(int argc, char *argv[]) {
-    int np = 0; // Number of processes
+    int np = 0;
 
     if (argc != 2) {
         printf("Usage: %s input_file\n", argv[0]);
@@ -47,25 +40,16 @@ int main(int argc, char *argv[]) {
             strcpy(process[np].id, id);
             process[np].arrive_time = arrive_time;
             process[np].burst = burst;
-
             parseProcessColor(process, np);
-
             np++;
         }
     }
 
     fclose(fp);
 
-    // Calculate process information based on SJF algorithm
     SJF(process, np);
-
-    // Display Gantt chart for visualization
     displayGanttChart(process, np);
-
-    // Display process table in the console
     displayProcessTable(process, np);
-
-    // Initialize SJF algorithm GUI (if applicable)
     initializeGUI_SJF(argc, argv, process, np);
 
     return 0;

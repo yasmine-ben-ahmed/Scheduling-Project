@@ -3,6 +3,11 @@
 #define GRAPHICS_H
 
 #define ID_LEN 20
+//#define MAX 100
+#define ID_LEN 20
+//#define TRUE 1
+//#define FALSE 0
+
 #define MAX_PROCESS_COUNT 100
 
 // Global variables
@@ -33,10 +38,6 @@ typedef struct _process {
 const char* get_process_color(const char* process_id);
 const char* get_process_color_rr(int process_number);
 const char* get_process_color_srt(int process_number);
-const char* get_process_color_prprem(int process_number);
-
-
-/****************************************Graphic Interface Coniguration**********************************/
 
 // Declare global variables for GTK widgets
 GtkWidget *window, *scrolled_window, *box, *tree_view, *textview, *text_view, *grid, *label;
@@ -253,53 +254,6 @@ const char* get_process_color_srt(int process_number) {
             return "#6B5B95";  // Royal purple for P3
         case 4:
             return "#FFB14E";  // Peach for P4
-        default:
-            return "#000000";  // Default to black for unknown processes
-    }
-}
-
-// Function to display the order of execution for Priority Preemptive
-void display_order_of_execution_prprem(GtkWidget* box, Process tab2[], int output[], int outputIndex) {
-    // Create a label for the order of execution
-    GtkWidget* order_label = create_markup_label("<span foreground='green'><b>Order of Execution:</b></span>");
-    gtk_box_pack_start(GTK_BOX(box), order_label, FALSE, FALSE, 0);
-
-    // Create a grid for the order of execution
-    GtkWidget* order_grid = gtk_grid_new();
-    gtk_grid_set_column_homogeneous(GTK_GRID(order_grid), TRUE);
-    gtk_box_pack_start(GTK_BOX(box), order_grid, TRUE, TRUE, 10);
-
-    // Iterate through the output array to create the order of execution text
-    for (int i = 0; i < outputIndex; i++) {
-        // Create a label for the process
-        GtkWidget* process_label = gtk_label_new(tab2[output[i] - 1].id);
-
-        // Set background color based on process (customize the colors)
-        GdkRGBA color;
-        gdk_rgba_parse(&color, get_process_color_rr(output[i]));
-        gtk_widget_override_background_color(process_label, GTK_STATE_FLAG_NORMAL, &color);
-
-        // Pack the label into the grid
-        gtk_grid_attach(GTK_GRID(order_grid), process_label, i, 0, 1, 1);
-    }
-
-    // Show all the widgets
-    gtk_widget_show_all(box);
-}
-
-
-
-// Get process color for Round Robin based on process number
-const char* get_process_color_prprem(int process_number) {
-    switch (process_number) {
-        case 1:
-            return "#FFA07A";  // Light salmon for P1
-        case 2:
-            return "#32CD32";  // Lime green for P2
-        case 3:
-            return "#4682B4";  // Steel blue for P3
-        case 4:
-            return "#A9A9A9";  // Dark gray for P4
         default:
             return "#000000";  // Default to black for unknown processes
     }

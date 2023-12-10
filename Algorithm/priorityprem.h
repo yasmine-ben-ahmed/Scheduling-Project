@@ -1,13 +1,9 @@
-// Header declarations
-
 void print_table(Process p[], int k);
 int find_highest_priority(Process p[], int n, int current_time);
 void process_init(Process p[], int len);
 
-// Function to initialize process attributes
 void process_init(Process p[], int len) {
     int i;
-
     for (i = 0; i < len; i++) {
         p[i].waiting_time = 0;
         p[i].return_time = 0;
@@ -16,7 +12,6 @@ void process_init(Process p[], int len) {
     }
 }
 
-// Function to print a table of process attributes
 void print_table(Process process[], int n1) {
     int i;
     int n2 = n1;
@@ -32,7 +27,6 @@ void print_table(Process process[], int n1) {
     }
 }
 
-// Function to find the process with the highest priority
 int find_highest_priority(Process p[], int n, int current_time) {
     int highest_priority = -1;
     int index = -1;
@@ -49,7 +43,6 @@ int find_highest_priority(Process p[], int n, int current_time) {
     return index;
 }
 
-// Function to perform Priority Scheduling
 void performPriorityScheduling(Process *process, int process_count) {
     int current_time = 0;
     int total_waiting_time = 0;
@@ -67,7 +60,7 @@ void performPriorityScheduling(Process *process, int process_count) {
         }
 
         printf("| %s ", process[selected_process].id);
-        output[outputIndex++] = selected_process + 1; // Store the index
+        output[outputIndex++] = selected_process + 1;
 
         if (process[selected_process].response_time == 0) {
             process[selected_process].response_time = current_time - process[selected_process].arrive_time;
@@ -90,11 +83,10 @@ void performPriorityScheduling(Process *process, int process_count) {
 
     printf("\n");
 
-    // Print table
-    puts(""); // Empty line
+    puts("");
     print_table(process, process_count);
 
-    puts(""); // Empty Line
+    puts("");
     printf("Total Waiting Time      : %-2d\n", total_waiting_time);
     printf("Average Waiting Time    : %-2.2lf\n", (double)total_waiting_time / (double)process_count);
     printf("Total Turnaround Time   : %-2d\n", total_turnaround_time);

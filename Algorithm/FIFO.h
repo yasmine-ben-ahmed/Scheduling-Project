@@ -1,35 +1,22 @@
-#include "SJF.h" // Include header file for SJF algorithm
 #include "SJF.h"
-// Function to compare arrival times of processes for sorting
+
 int compareArrivalTime(const void *a, const void *b) {
     return ((Process *)a)->arrive_time - ((Process *)b)->arrive_time;
 }
 
-GdkRGBA timeline_color = {0.0, 0.0, 0.0, 0.5}; // Adjust the alpha value as needed
+GdkRGBA timeline_color = {0.0, 0.0, 0.0, 0.5};
 
-// Function to implement First-In-First-Out (FIFO) algorithm
 void FIFO(Process *process, int np) {
-    // Sort processes based on arrival time using qsort
     qsort(process, np, sizeof(Process), compareArrivalTime);
 
-    // Calculate finishing time, waiting time, and turnaround time
     int currentTime = 0;
     for (int i = 0; i < np; i++) {
-        // Calculate finishing time
         process[i].tempsfin = currentTime + process[i].burst;
-
-        // Calculate waiting time and turnaround time
         process[i].waitingTime = currentTime - process[i].arrive_time;
         process[i].turnaroundTime = process[i].waitingTime + process[i].burst;
-
-        currentTime = process[i].tempsfin; // Update current time for the next iteration
+        currentTime = process[i].tempsfin;
     }
 }
-
-
-/*================================================================*/
-/**********________FIFO_Interface________********/
-/*================================================================*/
 
 static void show_table_FIFO(GtkWidget *widget, gpointer data) {
     Process *process_data = (Process *)data;
@@ -37,10 +24,10 @@ static void show_table_FIFO(GtkWidget *widget, gpointer data) {
     GtkWidget *table_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(table_window), "Table_FIFO");
     gtk_window_set_default_size(GTK_WINDOW(table_window), 500, 250);
-    
-    GtkWidget *vboxx = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5); // Create a vertical box
-    GtkWidget* pr_label = create_markup_label("<span foreground='purple'><big><b>First In First Out Algorithm (FIFO) </b></big></span>");
-    gtk_box_pack_start(GTK_BOX(vboxx), pr_label, FALSE, FALSE, 0); // Pack pr_label into vbox
+
+    GtkWidget *vboxx = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+    GtkWidget *pr_label = create_markup_label("<span foreground='purple'><big><b>First In First Out Algorithm (FIFO) </b></big></span>");
+    gtk_box_pack_start(GTK_BOX(vboxx), pr_label, FALSE, FALSE, 0);
 
     GtkListStore *list_store = gtk_list_store_new(4, G_TYPE_STRING, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT);
     GtkTreeIter iter;
@@ -55,11 +42,9 @@ static void show_table_FIFO(GtkWidget *widget, gpointer data) {
                                         2, process_data[i].burst,
                                         3, process_data[i].finish_time, -1);
 
-        
         total_waiting_time += process_data[i].waitingTime;
         total_turnaround_time += process_data[i].turnaroundTime;
         num_processes++;
-        
     }
 
     GtkWidget *tree_view = gtk_tree_view_new_with_model(GTK_TREE_MODEL(list_store));
@@ -76,7 +61,6 @@ static void show_table_FIFO(GtkWidget *widget, gpointer data) {
     GtkWidget *scrolled_window = gtk_scrolled_window_new(NULL, NULL);
     gtk_container_add(GTK_CONTAINER(scrolled_window), tree_view);
 
-    // Calculate Average Turnaround Time (TAM) and Average Waiting Time (TRM)
     char average_waiting_time[100], average_turnaround_time[100];
     if (num_processes > 0) {
         snprintf(average_waiting_time, sizeof(average_waiting_time),
@@ -90,7 +74,6 @@ static void show_table_FIFO(GtkWidget *widget, gpointer data) {
                  "<span foreground='green'><b>Average Turnaround Time (TRM): N/A</b></span>");
     }
 
-    // Create labels for average waiting time and average turnaround time
     GtkWidget *table_label_tam = gtk_label_new(NULL);
     GtkWidget *table_label_trm = gtk_label_new(NULL);
 
@@ -102,20 +85,15 @@ static void show_table_FIFO(GtkWidget *widget, gpointer data) {
     gtk_box_pack_start(GTK_BOX(vbox), table_label_tam, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(vbox), table_label_trm, FALSE, FALSE, 0);
 
-    // Add vboxx (containing pr_label) before vbox
     gtk_container_add(GTK_CONTAINER(table_window), vboxx);
-    gtk_box_pack_start(GTK_BOX(vboxx), vbox, TRUE, TRUE, 0); // Pack vbox into vboxx   
+    gtk_box_pack_start(GTK_BOX(vboxx), vbox, TRUE, TRUE, 0);
 
     gtk_widget_show_all(table_window);
 }
 
-
-
-/*****************************************************************************/
 static void show_diagram_FIFO(GtkWidget *widget, gpointer data) {
     Process *process_data = (Process *)data;
 
-    // Calculate the total time
     int total_time = 0;
     for (int i = 0; process_data[i].id[0] != '\0'; i++) {
         total_time += process_data[i].burst;
@@ -124,33 +102,29 @@ static void show_diagram_FIFO(GtkWidget *widget, gpointer data) {
     GtkWidget *diagram_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(diagram_window), "Gantt Diagram");
     gtk_window_set_default_size(GTK_WINDOW(diagram_window), 1000, 200);
-    
-    GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5); // Vertical box to hold the title and drawing area
 
-    // Create a label for the title
+    GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+
     GtkWidget *title_label = gtk_label_new(NULL);
     const gchar *title_markup = "<span foreground='purple' font_desc='Bold 15'>Order of execution _FIFO_</span>";
     gtk_label_set_markup(GTK_LABEL(title_label), title_markup);
-    gtk_box_pack_start(GTK_BOX(vbox), title_label, FALSE, FALSE, 0); // Pack the title label into the vertical box
-    
+    gtk_box_pack_start(GTK_BOX(vbox), title_label, FALSE, FALSE, 0);
+
     GtkWidget *drawing_area = gtk_drawing_area_new();
-    gtk_container_add(GTK_CONTAINER(diagram_window), vbox); // Add the vertical box instead of the drawing area directly
-    gtk_box_pack_start(GTK_BOX(vbox), drawing_area, TRUE, TRUE, 0); // Pack the drawing area into the vertical box
+    gtk_container_add(GTK_CONTAINER(diagram_window), vbox);
+    gtk_box_pack_start(GTK_BOX(vbox), drawing_area, TRUE, TRUE, 0);
 
     g_signal_connect(G_OBJECT(drawing_area), "draw", G_CALLBACK(draw_callback), process_data);
 
     gtk_widget_show_all(diagram_window);
 }
 
-
-/******************************************************************************/
-// Function to initialize GUI for FIFO algorithm
 void initializeGUI_FIFO(int argc, char *argv[], Process *process, int np) {
     gtk_init(&argc, &argv);
 
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), " Processes_Information_FIFO ");
-    gtk_window_set_default_size(GTK_WINDOW(window), 400, 200);
+    gtk_window_set_default_size(GTK_WINDOW(window), 350, 200);
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
     GtkWidget *main_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);

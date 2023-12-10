@@ -4,10 +4,8 @@
 
 #include <../graphique/ProcessesInterface.h>
 
-// Global variables
-int time_quantum; // Variable to store the time quantum
+int time_quantum;
 
-// Function declarations
 void displayProcessStats_rr(Process tab2[], int n);
 void Round_Robin(Process tab2[], int n);
 void Gantt_Chart(Process tab2[], int n);
@@ -146,4 +144,3 @@ void Gantt_Chart(Process tab2[], int n) {
     }
     printf("|\n----------------------------------\n");
 }
-

@@ -7,4 +7,4 @@ Note: Program generates random process data with each execution and put it insid
 
 Note: Data.txt file used for testing constant process data.
 
-NB: This version with comments.
+NB: This version without comments.
